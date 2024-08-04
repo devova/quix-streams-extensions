@@ -10,7 +10,7 @@ readme = "README.md"
 Homepage = "https://github.com/devova/quix-streams-extensions"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 quixstreams = "^2.8.1"
 
 [tool.poetry.extras]

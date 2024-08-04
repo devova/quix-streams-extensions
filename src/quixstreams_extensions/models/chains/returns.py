@@ -7,8 +7,7 @@ from returns.result import Failure, Result, ResultE, Success, safe
 from quixstreams_extensions.models.core import Chainable
 
 
-class DontPublishMessageException(Exception):
-    ...
+class DontPublishMessageException(Exception): ...
 
 
 def producer_error_handler(exc, *args, **kwargs) -> bool:
