@@ -6,7 +6,7 @@ from pydantic_avro import AvroBase
 from quixstreams import Application
 from quixstreams.models import BytesDeserializer
 
-from quixstreams_extensions.models.chains import pydantic
+from quixstreams_extensions.models.chains import loggers, pydantic
 from quixstreams_extensions.models.chains.confluent_schema_registry import avro
 from quixstreams_extensions.models.serializers.confluent_schema_registry.avro import AVROSerializer
 
@@ -32,7 +32,7 @@ class AVROPydanticDeserializer(avro.ToDict, pydantic.FromDict, BytesDeserializer
     """
 
 
-class PydanticAVROSerializer(pydantic.ToDict, AVROSerializer):
+class PydanticAVROSerializer(pydantic.ToDict, loggers.Logged, AVROSerializer):
     """
     Takes Pydantic model and convert into AVRO, to be ready for publishing
     """
@@ -63,9 +63,9 @@ def enhance(user: User):
 
 
 sdf = app.dataframe(input)
-sdf = sdf.filter(adults_only).print()
+sdf = sdf.filter(adults_only)
 sdf = sdf.apply(enhance)
-sdf = sdf.to_topic(output).print()
+sdf = sdf.to_topic(output)
 
 if __name__ == "__main__":
     app.run(sdf)
