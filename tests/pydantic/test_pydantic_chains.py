@@ -2,7 +2,6 @@ from typing import Literal
 
 from pydantic import BaseModel
 from quixstreams.models import BytesSerializer
-
 from quixstreams_extensions.models.chains import pydantic
 
 

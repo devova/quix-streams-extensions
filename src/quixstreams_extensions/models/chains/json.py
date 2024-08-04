@@ -22,9 +22,7 @@ class ToDict(Chainable):
         super().__init__(*args, **kwargs)
         self._loads = loads
 
-    def __call__(
-        self, value: bytes, ctx: SerializationContext
-    ) -> Union[Iterable[Mapping], Mapping]:
+    def __call__(self, value: bytes, ctx: SerializationContext) -> Union[Iterable[Mapping], Mapping]:
         try:
             return super(ToDict, self).__call__(self._loads(value), ctx)
         except (ValueError, TypeError) as exc:

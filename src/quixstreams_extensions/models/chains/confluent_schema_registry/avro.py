@@ -12,9 +12,7 @@ from quixstreams_extensions.models.core import Chainable
 
 
 class FromDict(Chainable):
-    def __init__(
-        self, schema_registry_client: SchemaRegistryClient, *args, **kwargs
-    ) -> None:
+    def __init__(self, schema_registry_client: SchemaRegistryClient, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._schema_registry_client = schema_registry_client
         self._serializers: Dict[str, AvroSerializer] = {}
@@ -24,9 +22,7 @@ class FromDict(Chainable):
         schema_name = topic_subject_name_strategy(confluent_ctx, ctx.topic)
         if schema_name not in self._serializers:
             schema = self._schema_registry_client.get_latest_version(schema_name)
-            self._serializers[schema_name] = AvroSerializer(
-                self._schema_registry_client, schema.schema
-            )
+            self._serializers[schema_name] = AvroSerializer(self._schema_registry_client, schema.schema)
         return super(FromDict, self).__call__(
             self._serializers[schema_name](value, confluent_ctx),
             ctx,
@@ -34,9 +30,7 @@ class FromDict(Chainable):
 
 
 class ToDict(Chainable):
-    def __init__(
-        self, schema_registry_client: SchemaRegistryClient, *args, **kwargs
-    ) -> None:
+    def __init__(self, schema_registry_client: SchemaRegistryClient, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._deserializer = AvroDeserializer(schema_registry_client)
 

@@ -1,5 +1,4 @@
 from quixstreams.models import BytesSerializer
-
 from quixstreams_extensions.models.chains.confluent_schema_registry import avro
 
 

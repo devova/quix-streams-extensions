@@ -1,4 +1,4 @@
-from typing import Any, Optional, Dict, Union, Type
+from typing import Any, Dict, Optional, Type, Union
 
 from pydantic import BaseModel
 from quixstreams.models import SerializationContext
@@ -25,9 +25,7 @@ class FromDict(Chainable):
         }
 
     def __call__(self, value: dict, ctx: SerializationContext) -> BaseModel:
-        return super(FromDict, self).__call__(
-            self._model_class.model_validate(value, **self._validation_kwargs), ctx
-        )
+        return super(FromDict, self).__call__(self._model_class.model_validate(value, **self._validation_kwargs), ctx)
 
 
 class ToDict(Chainable):
