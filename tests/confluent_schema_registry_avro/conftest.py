@@ -8,13 +8,18 @@ SCHEMA_REGISTRY_URL = "http://schema-registry.url"
 
 
 SCHEMA_ID = 1
-SCHEMA = json.dumps({
-    "type": "record",
-    "name": "ExampleRecord",
-    "fields": [
-        {"name": "it", "type": {"type": "enum", "name": "ItEnum", "symbols": ["works"]}}
-    ],
-})
+SCHEMA = json.dumps(
+    {
+        "type": "record",
+        "name": "ExampleRecord",
+        "fields": [
+            {
+                "name": "it",
+                "type": {"type": "enum", "name": "ItEnum", "symbols": ["works"]},
+            }
+        ],
+    }
+)
 
 
 @pytest.fixture
@@ -69,6 +74,7 @@ def mocked_schema_registry_during_deserialization(mocked_responses, subject):
             "version": 1,
         },
     )
+
 
 #
 # @pytest.fixture

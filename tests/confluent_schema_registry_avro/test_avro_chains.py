@@ -19,7 +19,12 @@ def test_to(mocked_schema_registry_during_deserialization, schema_registry_clien
     assert serializer(b"\x00\x00\x00\x00\x01\x00", ctx) == {"it": "works"}
 
 
-def test_from_to(mocked_schema_registry_during_serialization, mocked_schema_registry_during_deserialization, schema_registry_client, ctx):
+def test_from_to(
+    mocked_schema_registry_during_serialization,
+    mocked_schema_registry_during_deserialization,
+    schema_registry_client,
+    ctx,
+):
     class FromTo(avro.FromDict, avro.ToDict, BytesSerializer):
         ...
 
