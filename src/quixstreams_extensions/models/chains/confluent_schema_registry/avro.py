@@ -1,8 +1,7 @@
-from typing import Dict, Optional
+from typing import Optional
 
 from confluent_kafka.schema_registry import (
     SchemaRegistryClient,
-    topic_subject_name_strategy,
 )
 from confluent_kafka.schema_registry.avro import AvroDeserializer, AvroSerializer
 from confluent_kafka.serialization import MessageField
@@ -21,20 +20,11 @@ class FromDict(Chainable):
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
-        self._schema_registry_client = schema_registry_client
-        self._writer_schema_str = writer_schema_str
-        self._conf = conf
-        self._serializers: Dict[str, AvroSerializer] = {}
+        self._serializer = AvroSerializer(schema_registry_client, writer_schema_str, conf=conf)
 
     def __call__(self, value: dict, ctx: SerializationContext) -> bytes:
-        confluent_ctx = ctx.to_confluent_ctx(MessageField.VALUE)
-        schema_name = topic_subject_name_strategy(confluent_ctx, ctx.topic)
-        if schema_name not in self._serializers:
-            self._serializers[schema_name] = AvroSerializer(
-                self._schema_registry_client, self._writer_schema_str, conf=self._conf
-            )
         return super(FromDict, self).__call__(
-            self._serializers[schema_name](value, confluent_ctx),
+            self._serializer(value, ctx.to_confluent_ctx(MessageField.VALUE)),
             ctx,
         )
 
