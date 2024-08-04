@@ -36,7 +36,7 @@ messages_topic = app.topic(
 
 messages = [
     User(age=4, name="Volodymyr"),
-    User(age=23, name="Khrystyna"),
+    User(age=23, name="Sneha"),
     User(age=84, name="John"),
     User(age=13, name="Rin"),
     User(age=104, name="Abdullah"),

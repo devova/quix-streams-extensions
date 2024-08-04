@@ -26,10 +26,9 @@ jobs:
         pip install poetry
         poetry install
 
-    - name: Run linters
+    - name: Run pre-commit
       run: |
-        poetry run ruff format --check .
-        poetry run ruff check .
+        poetry run pre-commit run -a
 
     - name: Run tests
       run: |
