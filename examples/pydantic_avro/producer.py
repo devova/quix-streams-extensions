@@ -26,6 +26,7 @@ class PydanticAVROSerializer(pydantic.ToDict, AVROSerializer):
 
 class User(AvroBase):
     age: int
+    name: str
 
 
 messages_topic = app.topic(
@@ -34,11 +35,11 @@ messages_topic = app.topic(
 )
 
 messages = [
-    User(age=4),
-    User(age=23),
-    User(age=84),
-    User(age=13),
-    User(age=104),
+    User(age=4, name="Volodymyr"),
+    User(age=23, name="Khrystyna"),
+    User(age=84, name="John"),
+    User(age=13, name="Rin"),
+    User(age=104, name="Abdullah"),
 ]
 
 
