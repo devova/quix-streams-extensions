@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "quixstreams-extensions"
+version = "0.1.0"
+description = "Extends quix-streams functionality"
+authors = ["Volodymyr <trotsyshyn@proton.me>"]
+license = "Apache 2.0"
+readme = "README.md"
+
+[tool.poetry.urls]
+Homepage = "https://github.com/devova/quix-streams-extensions"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+quixstreams = "^2.8.1"
+
+[tool.poetry.extras]
+pydantic = ["pydantic"]
+avro = ["fastavro", "confluent_kafka"]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+responses = "^0.25.3"
+ruff = "^0.5.6"
+fastavro = "^1.9.5"
+confluent-kafka = "<2.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
