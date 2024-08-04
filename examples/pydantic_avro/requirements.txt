@@ -1,0 +1,3 @@
+quixstreams
+quixstreams-extensions[avro, pydantic]
+pydantic-avro

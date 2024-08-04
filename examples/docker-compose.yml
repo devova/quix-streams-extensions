@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  kafka:
+    image: docker.vectorized.io/vectorized/redpanda:latest
+    environment:
+      - REDPANDA_ENABLE_SASL=0
+      - REDPANDA_AUTO_CREATE_TOPICS=true
+    ports:
+      - "9092:9092"
+      - "9644:9644"
+    command: >
+      redpanda start
+      --kafka-addr PLAINTEXT://0.0.0.0:9092,DOCKER://0.0.0.0:19092
+      --advertise-kafka-addr PLAINTEXT://localhost:9092,DOCKER://kafka:19092
+      --pandaproxy-addr 0.0.0.0:8082
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:latest
+    container_name: schema-registry
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka:19092'
+      SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:8081'
+    depends_on:
+      - kafka
+    ports:
+      - "8081:8081"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=redpanda-cluster
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:19092
+      - KAFKA_CLUSTERS_0_SCHEMAREGISTRY=http://schema-registry:8081
+    depends_on:
+      - kafka
+      - schema-registry
+    ports:
+      - "8080:8080"
+
+networks:
+  default:
+    name: redpanda-net
