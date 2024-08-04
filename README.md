@@ -29,6 +29,7 @@ Here's an example of how to use the chainable serializers with QuixStreams:
 First let’s define our serializers:
 ```python
 from confluent_kafka.schema_registry import SchemaRegistryClient
+from pydantic_avro import AvroBase
 from quixstreams.models import (
     BytesDeserializer,
 )
@@ -51,15 +52,14 @@ class PydanticAVROSerializer(pydantic.ToDict, AVROSerializer):
     Takes Pydantic model and convert into AVRO, to be ready for publishing
     """
 
-    def __init__(self, schema_registry_client: SchemaRegistryClient, model_class: Type[AvroBase]):
+    def __init__(self, schema_registry_client: SchemaRegistryClient, model_class: Type[BaseModel]):
         super().__init__(schema_registry_client, json.dumps(model_class.avro_schema()), model_class)
-
 ```
 
 Then we can use them in the app:
 ```python
 from confluent_kafka.schema_registry import SchemaRegistryClient
-from pydantic import BaseModel
+from pydantic_avro import AvroBase
 from quixstreams import Application
 
 # Create an Application - the main configuration entry point
@@ -68,24 +68,41 @@ app = Application(...)
 # Configure the Schema Registry client
 schema_registry_client = SchemaRegistryClient(...)
 
-class User(BaseModel):
+class User(AvroBase):
   age: int
+
+class EnhancedUser(AvroBase):
+  age: int
+  prefer: Literal["quix-streaming", "sleeping", "hiking"]
 
 # Define the input topic
 input = app.topic(
     "input",
-    value_deserializer=PydanticAVROSerializer(schema_registry_client, User),
+    value_deserializer=AVROPydanticDeserializer(schema_registry_client, User),
 )
 
 # Define the output topics
-transaction_keeper_public_state = app.topic(
-    "transaction-keeper-state",
-    config=TopicConfig(
-        num_partitions=1,
-        replication_factor=1,
-        extra_config={"cleanup.policy": "compact"},
-    ),
-    value_serializer=JSONSerializer(),
+output = app.topic(
+    "output",
+    value_serializer=PydanticAVROSerializer(schema_registry_client, EnhancedUser),
 )
+
+
+def adults_only(user: User):
+    return user.age > 18
+
+
+def enhance(user: User):
+    return EnhancedUser(age=user.age, prefer="quix-streaming" if user.age < 99 else "sleeping")
+
+
+sdf = app.dataframe(input)
+sdf = sdf.filter(adults_only).print()
+sdf = sdf.apply(enhance)
+sdf = sdf.to_topic(output).print()
+
+if __name__ == "__main__":
+    app.run(sdf)
+
 ```
 Please discover `examples/` folder for more information.

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "quixstreams-extensions"
-version = "0.1.0"
+version = "0.1.1"
 description = "Extends quix-streams functionality"
 authors = ["Volodymyr <trotsyshyn@proton.me>"]
 license = "Apache 2.0"
