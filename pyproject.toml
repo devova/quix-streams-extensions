@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "quixstreams-extensions"
-version = "0.1.3"
+version = "0.2.0"
 description = "Extends quix-streams functionality"
 authors = ["Volodymyr <trotsyshyn@proton.me>"]
 license = "Apache 2.0"
@@ -11,7 +11,8 @@ Homepage = "https://github.com/devova/quix-streams-extensions"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-quixstreams = "^2.8.1"
+quixstreams = "^2.9.0"
+orjson = "<=3.10.6"  # pin version till https://github.com/ijl/orjson/issues/510
 
 [tool.poetry.extras]
 pydantic = ["pydantic"]
