@@ -1,27 +1,16 @@
-import json
-from typing import Type
-
 from confluent_kafka.schema_registry import SchemaRegistryClient
 from pydantic_avro import AvroBase
 from quixstreams import Application
+from quixstreams.models import Serializer
 
-from quixstreams_extensions.models.chains import pydantic
-from quixstreams_extensions.models.serializers.confluent_schema_registry.avro import AVROSerializer
+from quixstreams_extensions.serializers.composer import composed
+from quixstreams_extensions.serializers.compositions import confluent, pydantic
 
 # Create an Application - the main configuration entry point
 app = Application(broker_address="localhost:9092", consumer_group="pydantic_avro")
 
 # Configure the Schema Registry client
 schema_registry_client = SchemaRegistryClient({"url": "http://localhost:8081"})
-
-
-class PydanticAVROSerializer(pydantic.ToDict, AVROSerializer):
-    """
-    Takes Pydantic model and convert into AVRO, to be ready for publishing
-    """
-
-    def __init__(self, schema_registry_client: SchemaRegistryClient, model_class: Type[AvroBase]):
-        super().__init__(schema_registry_client, json.dumps(model_class.avro_schema()), model_class)
 
 
 class User(AvroBase):
@@ -31,7 +20,9 @@ class User(AvroBase):
 
 messages_topic = app.topic(
     "input",
-    value_serializer=PydanticAVROSerializer(schema_registry_client, User),
+    value_serializer=composed(
+        Serializer, pydantic.to_dict, confluent.to_avro(schema_registry_client, User.avro_schema())
+    ),
 )
 
 messages = [

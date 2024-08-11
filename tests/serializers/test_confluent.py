@@ -4,6 +4,9 @@ import pytest
 import responses
 from confluent_kafka.schema_registry import SchemaRegistryClient
 
+from quixstreams_extensions.serializers.compositions import confluent
+
+
 SCHEMA_REGISTRY_URL = "http://schema-registry.url"
 
 
@@ -80,24 +83,11 @@ def mocked_schema_registry_during_deserialization(mocked_responses, subject, sch
     )
 
 
-#
-# @pytest.fixture
-# def mock_finished_transaction_serializer_requests(mocked_responses, overridden_kafka_settings):
-#     mocked_responses.post(
-#         f"{overridden_kafka_settings.schema_registry.url}/subjects/{FINISHED_TRANSACTIONS_TOPIC}-value?normalize=False",
-#         status=200,
-#         json={
-#             "id": TOPIC_TO_ID_MAP[FINISHED_TRANSACTIONS_FILE_NAME],
-#             "schema": get_avro_schema(FINISHED_TRANSACTIONS_FILE_NAME),
-#             "subject": FINISHED_TRANSACTIONS_TOPIC,
-#             "version": 1,
-#         },
-#     )
-#
-#     mocked_responses.get(
-#         f"{overridden_kafka_settings.schema_registry.url}/schemas/ids/{TOPIC_TO_ID_MAP[FINISHED_TRANSACTIONS_FILE_NAME]}",
-#         status=200,
-#         json={
-#             "schema": get_avro_schema("finished_transactions"),
-#         },
-#     )
+def test_to_avro(mocked_schema_registry_during_serialization, schema_registry_client, schema, ctx):
+    serializer = confluent.to_avro(schema_registry_client, schema)
+    assert serializer({"it": "works"}, ctx) == b"\x00\x00\x00\x00\x01\x00"
+
+
+def test_to_dict(mocked_schema_registry_during_deserialization, schema_registry_client, ctx):
+    serializer = confluent.to_dict(schema_registry_client)
+    assert serializer(b"\x00\x00\x00\x00\x01\x00", ctx) == {"it": "works"}
