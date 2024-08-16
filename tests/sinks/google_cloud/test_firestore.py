@@ -2,7 +2,7 @@ from datetime import datetime
 from unittest import mock
 
 
-from quixstreams_extensions.sinks.gcp import FlatGoogleFirestoreSink
+from quixstreams_extensions.sinks.google_cloud import GoogleFirestoreFlatSink
 
 
 def test_flat_sink(topic):
@@ -10,7 +10,7 @@ def test_flat_sink(topic):
         {"key": "k1", "value": "v1"},
         {"key": "k2", "value": "v2"},
     ]
-    sink = FlatGoogleFirestoreSink("test_collection", client=mock.Mock())
+    sink = GoogleFirestoreFlatSink("test_collection", client=mock.Mock())
     for idx, message in enumerate(messages):
         sink.add(message["value"], message["key"], int(datetime.now().timestamp()), [], topic, 0, idx)
     sink.flush(topic, 0)
